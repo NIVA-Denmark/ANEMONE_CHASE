@@ -1,0 +1,93 @@
+Waterbody;Matrix;Substance;Species;Unit;Threshold;Status;Confidence
+Waterbody #1;Water;Anthracene;;µg/l;0.1;0.000003;M
+Waterbody #1;Water;Benzo(a)pyrene;;µg/l;0.00017;0.00002;M
+Waterbody #1;Water;PCB-138;;µg/l;0.00002;0.0000011;M
+Waterbody #1;Water;PCB-153;;µg/l;0.001;0.00000201;M
+Waterbody #1;Water;para-para-DDT;;µg/l;0.01;0.0000001;M
+Waterbody #1;Water;DDT total;;µg/l;0.025;0.00000069;M
+Waterbody #1;Water;Cyclodiene pesticides: Aldrin, Dieldrin, Endrin, Isodrin;;µg/l;0.005;0.0000149;M
+Waterbody #1;Water;Fluoranthene;;µg/l;0.0063;0.00008879;M
+Waterbody #1;Water;Hexachloro- cyclohexane;;µg/l;0.002;0.00005342;M
+Waterbody #1;Water;Naphthalene;;µg/l;2;0.00025413;M
+Waterbody #1;Water;Phenanthrene;;µg/l;1.3;0.00014536;M
+Waterbody #1;Water;Pyrene;;µg/l;0.023;0.0000425;M
+Waterbody #1;Water;Pentachloro- benzene;;µg/l;0.0007;0.0000012;M
+Waterbody #1;Water;Trifluralin;;µg/l;0.03;0.00000099;M
+Waterbody #1;Sediment;Anthracene;;µg/kg;85;0.5808;M
+Waterbody #1;Sediment;Benzo(a)pyrene;;µg/kg;430;1.4784;M
+Waterbody #1;Sediment;Benzo[ghi]perylene;;µg/kg;85;0.5544;M
+Waterbody #1;Sediment;Benz[a]anthracene;;µg/kg;261;1.5312;M
+Waterbody #1;Sediment;PCB-101;;µg/kg;3;0.0066;M
+Waterbody #1;Sediment;PCB-118;;µg/kg;0.6;0.0066;M
+Waterbody #1;Sediment;PCB-138;;µg/kg;7.9;0.0066;M
+Waterbody #1;Sediment;PCB-153;;µg/kg;40;0.0066;M
+Waterbody #1;Sediment;PCB-180;;µg/kg;12;0.0066;M
+Waterbody #1;Sediment;PCB-28;;µg/kg;1.7;0.0066;M
+Waterbody #1;Sediment;PCB-52;;µg/kg;2.7;0.0066;M
+Waterbody #1;Sediment;Cadmium;;µg/kg;1200;20.0682;M
+Waterbody #1;Sediment;Chrysene (Triphenylene);;µg/kg;384;1.4256;M
+Waterbody #1;Sediment;Chromium (Cr);;µg/kg;81000;2452.78;M
+Waterbody #1;Sediment;Copper (Cu);;µg/kg;34000;691.238;M
+Waterbody #1;Sediment;DDE (p,p’);;µg/kg;2.2;0.0066;M
+Waterbody #1;Sediment;Dieldrin;;µg/kg;2;0.0165;M
+Waterbody #1;Sediment;Fluoranthene;;µg/kg;600;2.31;M
+Waterbody #1;Sediment;Hexachlorobenzene;;µg/kg;20;0.0066;M
+Waterbody #1;Sediment;gamma-HCH;;µg/kg;3;0.0165;M
+Waterbody #1;Sediment;Mercury;;µg/kg;150;2.89874;M
+Waterbody #1;Sediment;Indeno[1,2,3-cd]pyrene;;µg/kg;240;0.6204;M
+Waterbody #1;Sediment;Naphthalene;;µg/kg;160;0.132;M
+Waterbody #1;Sediment;Phenanthrene;;µg/kg;240;2.0328;M
+Waterbody #1;Sediment;Lead;;µg/kg;47000;1605.456;M
+Waterbody #1;Sediment;Pyrene;;µg/kg;665;1.9668;M
+Waterbody #1;Sediment;Tributyltin compounds (Tributyltin- cation);;µg/kg;1.6;0.0198;M
+Waterbody #1;Sediment;Zinc (Zn);;µg/kg;150000;3344.7;M
+Waterbody #1;Biota;Cadmium;Shellfish;µg/kg (dw);960;855.7651829;M
+Waterbody #1;Biota;Mercury;Shellfish;µg/kg (ww);20;45.21203776;M
+Waterbody #1;Biota;Lead;Shellfish;µg/kg (dw);1300;2014.858523;M
+Waterbody #1;Biological Effects;Vas Deferens Sequence Index (VDSI);Nucella lapillus;VDSI;2;0.600625;M
+Waterbody #2;Sediment;Anthracene;;µg/kg;85;1.0032;M
+Waterbody #2;Sediment;Benzo(a)pyrene;;µg/kg;430;6.1408;M
+Waterbody #2;Sediment;Benzo[ghi]perylene;;µg/kg;85;9.1504;M
+Waterbody #2;Sediment;Benz[a]anthracene;;µg/kg;261;3.2528;M
+Waterbody #2;Sediment;Cadmium;;µg/kg;1200;42.021;M
+Waterbody #2;Sediment;Chromium (Cr);;µg/kg;81000;34877.43;M
+Waterbody #2;Sediment;Copper (Cu);;µg/kg;34000;7263.63;M
+Waterbody #2;Sediment;Dibenzothiophene;;µg/kg;190;1.1552;M
+Waterbody #2;Sediment;Fluoranthene;;µg/kg;600;7.8736;M
+Waterbody #2;Sediment;Mercury;;µg/kg;150;18.009;M
+Waterbody #2;Sediment;Indeno[1,2,3-cd]pyrene;;µg/kg;240;11.096;M
+Waterbody #2;Sediment;Naphthalene;;µg/kg;160;3.4048;M
+Waterbody #2;Sediment;Phenanthrene;;µg/kg;240;6.2928;M
+Waterbody #2;Sediment;Lead;;µg/kg;47000;10805.4;M
+Waterbody #2;Sediment;Pyrene;;µg/kg;665;6.8096;M
+Waterbody #2;Sediment;Tributyltin compounds (Tributyltin- cation);;µg/kg;1.6;0.076;M
+Waterbody #2;Sediment;Zinc (Zn);;µg/kg;150000;27013.5;M
+Waterbody #2;Biological Effects;Vas Deferens Sequence Index (VDSI);Buccinum undatum;VDSI;0.3;0;H
+Waterbody #2;Biological Effects;Vas Deferens Sequence Index (VDSI);Neptunea antiqua;VDSI;2;0.9025;H
+Waterbody #3;Sediment;Anthracene;;µg/kg;85;1.848;M
+Waterbody #3;Sediment;Benzo(a)pyrene;;µg/kg;430;18.564;M
+Waterbody #3;Sediment;Benzo[ghi]perylene;;µg/kg;85;16.576;M
+Waterbody #3;Sediment;Benz[a]anthracene;;µg/kg;261;21.56;M
+Waterbody #3;Sediment;Cadmium;;µg/kg;1200;34.5828;M
+Waterbody #3;Sediment;Chromium (Cr);;µg/kg;81000;10778.306;M
+Waterbody #3;Sediment;Copper (Cu);;µg/kg;34000;2074.968;M
+Waterbody #3;Sediment;Dibenzothiophene;;µg/kg;190;1.064;M
+Waterbody #3;Sediment;Fluoranthene;;µg/kg;600;48.468;M
+Waterbody #3;Sediment;Mercury;;µg/kg;150;10.37484;M
+Waterbody #3;Sediment;Indeno[1,2,3-cd]pyrene;;µg/kg;240;10.752;M
+Waterbody #3;Sediment;Naphthalene;;µg/kg;160;2.772;M
+Waterbody #3;Sediment;Phenanthrene;;µg/kg;240;25.34;M
+Waterbody #3;Sediment;Lead;;µg/kg;47000;9337.356;M
+Waterbody #3;Sediment;Pyrene;;µg/kg;665;39.48;M
+Waterbody #3;Sediment;Tributyltin compounds (Tributyltin- cation);;µg/kg;1.6;0.07;M
+Waterbody #3;Sediment;Zinc (Zn);;µg/kg;150000;11527.6;M
+Waterbody #3;Biota;Anthracene;Shellfish;µg/kg (dw);290;3.53529831;M
+Waterbody #3;Biota;Benzo(a)pyrene;Shellfish;µg/kg (ww);5;1.821666667;M
+Waterbody #3;Biota;Cadmium;Shellfish;µg/kg (dw);960;583.3333333;M
+Waterbody #3;Biota;Fluoranthene;Shellfish;µg/kg (ww);30;8.88;M
+Waterbody #3;Biota;Mercury;Shellfish;µg/kg (ww);20;17.11139587;M
+Waterbody #3;Biota;Naphthalene;Shellfish;µg/kg (dw);340;10.07306289;M
+Waterbody #3;Biota;Phenanthrene;Shellfish;µg/kg (dw);1700;19.30881828;M
+Waterbody #3;Biota;Lead;Shellfish;µg/kg (dw);1300;950;M
+Waterbody #3;Biota;Pyrene;Shellfish;µg/kg (dw);100;35.75049272;M
+Waterbody #3;Biological Effects;Vas Deferens Sequence Index (VDSI);Nucella lapillus;VDSI;2;1.996666667;H
