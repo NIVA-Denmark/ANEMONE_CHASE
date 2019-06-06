@@ -32,11 +32,10 @@ ui <- fluidPage(
             ),
             p("The assesssment is made per waterbody. If no waterbody is specified, all indicators are combined in a single assessment."),
             p("Response=1 (default): status worsens with increasing indicator value. Response=-1: status improves with increasing indicator value"),
-            p("Example data can be found here:", HTML("<a href='data/CHASE_example_DK.txt' target='_blank'>CHASE_example_DK.txt</a>"))
+            p("Example data can be found here:", HTML("<a href='data/CHASE_test.csv' target='_blank'>CHASE_test.csv</a>"))
         )
         
       }),
-      
       
       withTags({
         div(class="header", checked=NA,
@@ -58,7 +57,9 @@ ui <- fluidPage(
       tabsetPanel(
         tabPanel("Data", tableOutput("InDatatable")),
         tabPanel("Results", 
-                 uiOutput("Test1"),plotOutput("plot"))   
+                 uiOutput("Test1")),   
+        tabPanel("Plot", 
+                 plotOutput("plot",inline=TRUE))   
       ) # tabset panel
     )
   )  
@@ -72,10 +73,8 @@ server <- function(input, output, session) {
   
   output$caption <- renderText(input$num)
   
-  
   addResourcePath("data","./data/")
  
-  
   #This function is repsonsible for loading in the selected file
   filedata <- reactive({
     infile <- input$datafile
@@ -133,19 +132,41 @@ server <- function(input, output, session) {
     levels<-levels[levels$ymin<=ymax,]
     ymax2=max(levels$ymax,na.rm=TRUE)
     levels[levels$ymax==ymax2,]$ymax<-ymax    
-    Palette1=c("#3399FF", "#66FF66", "#FFFF66","#FF9933","#FF6600" )
+    #Palette1=c("#3399FF", "#66FF66", "#FFFF66","#FF9933","#FF6600" )
+    #Palette1=c("#3333cc", "#00ff00","#ffff00","#ffc000","#ff0000" )
+    Palette1=c("#007eff","#00d600","#ffff00","#ff8c2b","#ff0000")
     
-    p<-ggplot(data=QE,x=Waterbody,y=ConSum) + theme_bw() +
-      geom_point(size=5,data=QE, aes(x=factor(Waterbody), y=ConSum,shape=Matrix, ymin=0)) +
-      geom_ribbon(data=levels,aes(x=x,ymin=ymin,ymax=ymax,fill=Status),alpha=0.5) +
-      geom_point(size=5,data=QE, aes(x=factor(Waterbody), y=ConSum,shape=Matrix, ymin=0)) +
+    shapelist<-c(0,1,2,4)
+    #browser()
+    df<-QE 
+    df$Waterbody<-factor(df$Waterbody,levels=rev(levels(df$Waterbody)))
+
+    p<-ggplot(data=df,x=Waterbody,y=ConSum) + theme_bw(base_size=14) +
+      theme(legend.position="top",legend.box="horizontal") +
+      geom_point(size=5,data=df, aes(x=factor(Waterbody), y=ConSum,shape=Matrix)) +
+      geom_ribbon(data=levels,aes(x=x,ymin=ymin,ymax=ymax,fill=Status),alpha=1) +
+      geom_point(size=5,data=df, aes(x=factor(Waterbody), y=ConSum,shape=Matrix)) +
       scale_fill_manual(name="Status", values=Palette1)+
-      xlab('Waterbody')+ylab('Contamination Sum')
+      scale_shape_manual(values=shapelist) +
+      ylab('Contamination Sum') + xlab('Waterbody') +
+      coord_flip()
       return(p)
   })
   
+  figh<-reactive({
+    QE<-QEspr()
+    n<-nrow(QE)
+    return(100+n*60)
+  })
+  
+  
+  
   output$InDatatable <- renderTable({return(InData())})
-  output$plot <- renderPlot({return(CHASEplot())})
+  observe({
+  output$plot <- renderPlot({return(CHASEplot())},
+                            width=800,height=figh(),res=72) 
+  })
+  #figh()                       
   output$QEtable <- renderTable({return(QEspr())})
   output$Test1 <- renderUI({
     list(

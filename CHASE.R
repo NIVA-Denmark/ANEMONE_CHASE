@@ -4,8 +4,7 @@ library("tidyr")
 #===============================================================================
 # function Assessment
 Assessment<- function(assessmentdata,summarylevel=1){
-  
-  
+  datain<-assessmentdata
    requiredcols <- c("Matrix","Substance","Threshold","Status")
    extracols <- c("Waterbody","Response")
    
@@ -37,7 +36,12 @@ Assessment<- function(assessmentdata,summarylevel=1){
   
   for(j in 1:nextra){
     if(okextra[j]==0){
-      assessmentdata[[extracols[j]]]<-1
+      if(extracols[j]=="Waterbody"){
+        assessmentdata$Waterbody<-"1"
+        assessmentdata$Waterbody<-factor(assessmentdata$Waterbody,levels=c("1"))
+      }else{
+        assessmentdata[[extracols[j]]]<-1
+      }
     }
   }
 
@@ -55,6 +59,7 @@ Assessment<- function(assessmentdata,summarylevel=1){
   }else{
     # The required columns are present - do the assessment
     
+    #browser()
     
     # Change order of matrices factors
     mat1<-data.frame(unique(assessmentdata$Matrix))
@@ -77,11 +82,23 @@ Assessment<- function(assessmentdata,summarylevel=1){
     
     assessmentdata$CR<-ContaminationRatio(assessmentdata$Threshold,assessmentdata$Status,assessmentdata$Response)
     
-    QEdata<-summarise(group_by(assessmentdata,Waterbody,Matrix), sumCR=sum(CR), Count=n())
-    QEdata$ConSum<-QEdata$sumCR/sqrt(QEdata$Count)
+    QEdata<-assessmentdata %>%
+      group_by(Waterbody,Matrix) %>%
+      summarise(sumCR=sum(CR,na.rm=T), Count=n(),avgCR=mean(CR,na.rm=T)) %>%
+      mutate(ConSum=sumCR/sqrt(Count),
+             matrixmatch=tolower(Matrix))
     
-    QEdata$sumCR <- NULL
-    QEdata$Count <- NULL
+   BioEffectsList <- c("biological effects",
+                       "biological.effects",
+                       "bio effects",
+                       "bio.effects")
+   
+    # for biological effects, use the average of the contamination ratio
+    QEdata<-QEdata %>%
+      mutate(ConSum=ifelse(matrixmatch %in% BioEffectsList,avgCR,ConSum)) %>%
+      select(-c(sumCR,avgCR,Count,matrixmatch))
+    
+
     QEspr<-spread(QEdata,Matrix,ConSum)
     
     QEdata$QEStatus<-CHASEStatus(QEdata$ConSum)
@@ -89,8 +106,7 @@ Assessment<- function(assessmentdata,summarylevel=1){
     QEdata<-arrange(QEdata,Waterbody,Matrix)
     
     CHASE<-summarise(group_by(QEdata,Waterbody), ConSum=max(ConSum, na.rm = TRUE))
-    CHASE$Waterbody<-NULL
-    CHASEQE<-inner_join(QEdata, CHASE, 'ConSum')
+    CHASEQE<-inner_join(QEdata, CHASE, by=c('Waterbody','ConSum'))
     CHASEQE<-rename(CHASEQE,Status=QEStatus,Worst=Matrix)
     assessmentdata<-left_join(assessmentdata,QEdata,c('Waterbody','Matrix'))
     QEspr<-inner_join(QEspr, CHASEQE, 'Waterbody')
@@ -111,7 +127,7 @@ Assessment<- function(assessmentdata,summarylevel=1){
     }else if(summarylevel==4){
       return(CHASEQE)
     }else{
-      return(assessmentdata)
+      return(datain)
     }
     #
   }
@@ -150,13 +166,6 @@ AddColours<-function(CRsum){
   return(co)
 }
 
-
-#===============================================================================
-# function Threshold
-Threshold <- function(substance){
-  substances<- read.csv('./data/substances.csv', header = TRUE,  sep=";")
-  return(value)
-}
 
 
 #===============================================================================
