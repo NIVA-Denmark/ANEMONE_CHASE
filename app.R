@@ -1,11 +1,12 @@
 rm(list = ls())
 library(shiny)
 library(ggplot2)
+library(DT)
+library(data.table)
 source('CHASE.R')
-source('javascript.R')
+source('outputtable.R')
 
 
-#== 'Moderate'
 ui <- fluidPage(
   
   a(target="blank",href="http://anemoneproject.eu/",img(src="anemone_logo.jpg")),
@@ -37,29 +38,28 @@ ui <- fluidPage(
         
       }),
       
-      withTags({
-        div(class="header", checked=NA,
-            h4("Options"),
-            p("More assessment options..."),br(),br()
-        )
-      }),
+
       withTags({
         div(class="header", checked=NA,
             h4("More information"),
             p("To find out more, contact ",
-            a(href="https://niva-denmark.dk/heat/", "NIVA Denmark")),
-            a(href="https://niva-denmark.dk/heat/",img(src="NIVA-Denmark-150.png"))
+            a(href="mailto:cjm@niva-dk.dk", "NIVA Denmark")),
+            a(href="mailto:cjm@niva-dk.dk",img(src="NIVA-Denmark-150.png"))
         )
       })
     ),
     
     mainPanel(
       tabsetPanel(
-        tabPanel("Data", tableOutput("InDatatable")),
-        tabPanel("Results", 
-                 uiOutput("Test1")),   
+        tabPanel("Data", p(DT::dataTableOutput("InDatatable"))),
+        tabPanel("Indicators", 
+                 p(DT::dataTableOutput("IndicatorsTable"))),
+        tabPanel("Results by Matrix", 
+                 p(DT::dataTableOutput("QEResultsTable"))),   
+        tabPanel("Overall Results", 
+                 p(DT::dataTableOutput("ResultsTable"))),   
         tabPanel("Plot", 
-                 plotOutput("plot",inline=TRUE))   
+                 p(plotOutput("plot",inline=TRUE)) )  
       ) # tabset panel
     )
   )  
@@ -89,9 +89,16 @@ server <- function(input, output, session) {
   InData <- reactive({
     df<-filedata()
     if (is.null(df)){return(NULL)} 
-    out<-Assessment(df)     #Individual indicator results
+    out<-Assessment(df,0)     #Individual indicator results
     return(out)
   })
+  IndicatorsData<- reactive({
+    df<-filedata()
+    if (is.null(df)){return(NULL)} 
+    out<-Assessment(df,1)     #Individual indicator results
+    return(out)
+  })
+  
   QEdata <- reactive({
     df<-filedata()
     if (is.null(df)){return(NULL)} 
@@ -132,8 +139,6 @@ server <- function(input, output, session) {
     levels<-levels[levels$ymin<=ymax,]
     ymax2=max(levels$ymax,na.rm=TRUE)
     levels[levels$ymax==ymax2,]$ymax<-ymax    
-    #Palette1=c("#3399FF", "#66FF66", "#FFFF66","#FF9933","#FF6600" )
-    #Palette1=c("#3333cc", "#00ff00","#ffff00","#ffc000","#ff0000" )
     Palette1=c("#007eff","#00d600","#ffff00","#ff8c2b","#ff0000")
     
     shapelist<-c(0,1,2,4)
@@ -160,19 +165,52 @@ server <- function(input, output, session) {
   })
   
   
-  
-  output$InDatatable <- renderTable({return(InData())})
   observe({
-  output$plot <- renderPlot({return(CHASEplot())},
-                            width=800,height=figh(),res=72) 
+    output$InDatatable <- IndicatorTableDT(InData())
   })
-  #figh()                       
+  #output$InDatatable <- renderTable({return(InData())})
+  
+  observe({
+    output$IndicatorsTable <- IndicatorTableDT(IndicatorsData(),roundlist=c("CR","ConSum"),valuecols="QEStatus",cols=c("QEStatus","ConSum"))
+  })
+  
+  observe({
+    QEnames<-QEdata()
+    
+    output$QEResultsTable <- IndicatorTableDT(QEdata(),roundlist=c("ConSum"),valuecols="QEStatus",cols=c("QEStatus","ConSum"))
+  })
+  
+  
+  
+  observe({
+    QEnames<-QEdata()
+    if(!is.null(QEnames)){
+
+      QEnames<-distinct(QEnames,Matrix)
+      QEnames<-as.character(QEnames$Matrix)
+      roundcols<-c("ConSum",QEnames)
+    }else{
+      roundcols<-c("ConSum")
+    }
+    
+    output$ResultsTable <- IndicatorTableDT(QEspr(),roundlist=roundcols,valuecols="Status",cols=c("Status","ConSum"))
+  })
+  
+  
+  
+  
   output$QEtable <- renderTable({return(QEspr())})
-  output$Test1 <- renderUI({
-    list(
-      tags$head(tags$script(HTML('Shiny.addCustomMessageHandler("jsCode", function(message) { eval(message.value); });')))
-      , tableOutput("QEtable")
-    )})
+
+  observe({
+    if (is.null(QEdata())){
+      output$plot <- NULL
+    }else{
+      output$plot <- renderPlot({return(CHASEplot())},
+                                width=800,height=figh(),res=72) 
+    }
+  })
+
+  
 }
 
 shinyApp(ui=ui, server=server)

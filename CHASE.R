@@ -3,8 +3,23 @@ library("tidyr")
 
 #===============================================================================
 # function Assessment
-Assessment<- function(assessmentdata,summarylevel=1){
+Assessment<- function(assessmentdata,summarylevel=0){
   datain<-assessmentdata
+  
+  # for data having identical values in all columns except Status, 
+  # then the average status is used
+  groupcols<-names(assessmentdata)
+  groupcols<- groupcols[!groupcols=="Status"]
+  
+  assessmentdata <- assessmentdata %>%
+    mutate(id=row_number()) %>%
+    group_by(.dots=groupcols) %>%
+    summarise(Status=mean(Status,na.rm=T),n=n(),id=min(id,na.rm=T)) %>%
+    arrange(id) %>%
+    select(-id) %>%
+    ungroup()
+
+
    requiredcols <- c("Matrix","Substance","Threshold","Status")
    extracols <- c("Waterbody","Response")
    
@@ -18,6 +33,11 @@ Assessment<- function(assessmentdata,summarylevel=1){
   ok <- rep(0, nreq)
   okextra <- rep(0, nextra)
   foundresponse=FALSE
+  
+  doConfidence<-FALSE
+  if("Confidence" %in% cnames){
+    doConfidence<-TRUE
+  }
   
   for (i in 1:nimp){
     for (j in 1:nreq){
@@ -39,6 +59,9 @@ Assessment<- function(assessmentdata,summarylevel=1){
       if(extracols[j]=="Waterbody"){
         assessmentdata$Waterbody<-"1"
         assessmentdata$Waterbody<-factor(assessmentdata$Waterbody,levels=c("1"))
+        assessmentdata <- assessmentdata %>% 
+          select(Waterbody, everything())
+        
       }else{
         assessmentdata[[extracols[j]]]<-1
       }
@@ -82,6 +105,17 @@ Assessment<- function(assessmentdata,summarylevel=1){
     
     assessmentdata$CR<-ContaminationRatio(assessmentdata$Threshold,assessmentdata$Status,assessmentdata$Response)
     
+    if(doConfidence){
+      QEdata<-assessmentdata
+      QEdata$ConfScore<-toupper(substr(QEdata$Confidence,1,1))
+      QEdata$ConfScore<-ifelse(QEdata$ConfScore=="H",1,
+                               ifelse(QEdata$ConfScore=="M",0.5,0))
+      QEdata<-QEdata %>%
+        group_by(Waterbody,Matrix) %>%
+        summarise(sumCR=sum(CR,na.rm=T), Count=n(),avgCR=mean(CR,na.rm=T))
+      
+    }
+    
     QEdata<-assessmentdata %>%
       group_by(Waterbody,Matrix) %>%
       summarise(sumCR=sum(CR,na.rm=T), Count=n(),avgCR=mean(CR,na.rm=T)) %>%
@@ -120,7 +154,9 @@ Assessment<- function(assessmentdata,summarylevel=1){
     }
     
     #return(n)
-    if(summarylevel==2){
+    if(summarylevel==1){
+      return(assessmentdata)
+    }else if(summarylevel==2){
       return(QEspr)
     }else if(summarylevel==3){
       return(QEdata)
@@ -173,6 +209,7 @@ AddColours<-function(CRsum){
 ContaminationSum <- function(ratiolist){
   
 }
+
 
 
 
