@@ -51,14 +51,20 @@ ui <- fluidPage(
     
     mainPanel(
       tabsetPanel(
-        tabPanel("Data", p(DT::dataTableOutput("InDatatable")), h3(textOutput("warning"))),
-        tabPanel("Indicators", 
+        
+        tabPanel("Data", 
+                 h3(tags$style(type='text/css', '#warning {color: red;}'), 
+                    textOutput("warning")),
+                 p(DT::dataTableOutput("InDatatable"))
+                 
+                 ),
+        tabPanel("Indicators", h3(""),
                  p(DT::dataTableOutput("IndicatorsTable"))),
-        tabPanel("Results by Matrix", 
+        tabPanel("Results by Matrix", h3(""),
                  p(DT::dataTableOutput("QEResultsTable"))),   
-        tabPanel("Overall Results", 
+        tabPanel("Overall Results", h3(""),
                  p(DT::dataTableOutput("ResultsTable"))),   
-        tabPanel("Plot", 
+        tabPanel("Plot", h3(""),
                  p(plotOutput("plot",inline=TRUE)) )  
       ) # tabset panel
     )
@@ -85,14 +91,14 @@ server <- function(input, output, session) {
     result = tryCatch({
       filedata<-read.table(infile$datapath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char="",encoding='UTF-8')
     }, warning = function(w) {
-      print("warning") #warning-handler-code
+      cat("warning read.table()\n") #warning-handler-code
       filedata<-NULL
     }, error = function(e) {
-      print("error") #error-handler-code
+      cat("error read.table()\n") #error-handler-code
       output$warning<-renderText("ERROR - Could not read input file")
       filedata<-NULL
     }, finally = {
-      print("cleanup") #cleanup-code
+      cat("cleanup  read.table()\n") #cleanup-code
       return(filedata)
     })
  
@@ -101,7 +107,8 @@ server <- function(input, output, session) {
   
   InData <- reactive({
     df<-filedata()
-    if (is.null(df)){return(NULL)
+    if (is.null(df)){
+      return(NULL)
       }else{
       out<-Assessment(df,0)     #Individual indicator results
       if(is.data.frame(out)){
@@ -202,6 +209,8 @@ server <- function(input, output, session) {
     if(!is.null(df)){
       if(ncol(df)>1){
         output$InDatatable <- IndicatorTableDT(df)
+      }else{
+        output$InDatatable <- NULL
       }
     }
     
@@ -213,6 +222,8 @@ server <- function(input, output, session) {
     if(!is.null(df)){
       if(ncol(df)>1){
         output$IndicatorsTable <- IndicatorTableDT(df,roundlist=c("CR","ConSum"),valuecols="QEStatus",cols=c("QEStatus","ConSum"))
+      }else{
+        output$IndicatorsTable <- NULL
       }
     }
   })
@@ -223,6 +234,8 @@ server <- function(input, output, session) {
     if(!is.null(df)){
       if(ncol(df)>1){
         output$QEResultsTable <- IndicatorTableDT(df,roundlist=c("ConSum"),valuecols="QEStatus",cols=c("QEStatus","ConSum"))
+      }else{
+        output$QEResultsTable <- NULL
         }
       }
     
@@ -244,6 +257,8 @@ server <- function(input, output, session) {
     if(!is.null(df)){
       if(ncol(df)>1){
         output$ResultsTable <- IndicatorTableDT(QEspr(),roundlist=roundcols,valuecols="Status",cols=c("Status","ConSum"))
+      }else{
+        output$ResultsTable <- NULL
       }
     }
   })
