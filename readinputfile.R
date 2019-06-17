@@ -21,7 +21,11 @@ readinputfile<-function(filepath){
   #browser()
   res <- try(read.table(filepath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char=""))
   if(inherits(res, "try-error")){
-    res<-"Error reading file"
+    # error - try reading ANSI encoding
+    res <- try(read.table(filepath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char="", fileEncoding="Windows-1252"))
+    if(inherits(res, "try-error")){
+      res<-"Error reading file"
+    }
   } 
     return(res)
   }
