@@ -196,8 +196,14 @@ server <- function(input, output, session) {
   
   
   observe({
-    output$InDatatable <- IndicatorTableDT(InData())
-  })
+    df<-InData()
+    if(!is.null(df)){
+      if(ncol(df)>1){
+        output$InDatatable <- IndicatorTableDT(df)
+      }
+    }
+    
+    })
   #output$InDatatable <- renderTable({return(InData())})
   
   observe({
