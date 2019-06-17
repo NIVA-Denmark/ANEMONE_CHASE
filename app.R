@@ -67,10 +67,7 @@ ui <- fluidPage(
 ) #fluid page
 
 server <- function(input, output, session) {
-  session$onFlushed(function() {
-    session$sendCustomMessage(type='jsCode', list(value = script))
-  }, FALSE)
-  
+
   output$caption <- renderText(input$num)
   
   addResourcePath("data","./data/")
