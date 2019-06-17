@@ -121,34 +121,39 @@ server <- function(input, output, session) {
   })
   IndicatorsData<- reactive({
     df<-filedata()
-    if (is.null(df)){return(NULL)} 
+    if (is.null(df)){return(NULL)}else{
+      
     out<-Assessment(df,1)     #Individual indicator results
     if(is.data.frame(out)){
       return(out)
     }else{
       return(data.frame())
     }
+    } 
   })
   
   QEdata <- reactive({
     df<-filedata()
-    if (is.null(df)){return(NULL)} 
+    if (is.null(df)){return(NULL)}else{
+      
     out<-Assessment(df,3)     #Quality Element results
     if(is.data.frame(out)){
       return(out)
     }else{
       return(data.frame())
     }
+    }
   })
   QEspr <- reactive({
     df<-filedata()
-    if (is.null(df)){return(NULL)} 
+    if (is.null(df)){return(NULL)}else{
     out<-Assessment(df,2)     #QE Results transposed
     if(is.data.frame(out)){
       return(out)
     }else{
       return(data.frame())
     }
+      } 
   })
   
   CHASEplot<- reactive({
