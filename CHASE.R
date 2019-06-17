@@ -6,18 +6,7 @@ library("tidyr")
 Assessment<- function(assessmentdata,summarylevel=0){
   datain<-assessmentdata
   
-  # for data having identical values in all columns except Status, 
-  # then the average status is used
-  groupcols<-names(assessmentdata)
-  groupcols<- groupcols[!groupcols=="Status"]
-  
-  assessmentdata <- assessmentdata %>%
-    mutate(id=row_number()) %>%
-    group_by(.dots=groupcols) %>%
-    summarise(Status=mean(Status,na.rm=T),n=n(),id=min(id,na.rm=T)) %>%
-    arrange(id) %>%
-    select(-id) %>%
-    ungroup()
+
 
 
    requiredcols <- c("Matrix","Substance","Threshold","Status")
@@ -78,11 +67,27 @@ Assessment<- function(assessmentdata,summarylevel=0){
         message(paste("    ",requiredcols[j]))
       }
     }
-    return(NA)
+    
+    missingcols<-requiredcols[ok!=1]
+    return(paste0("Missing columns: '",paste(missingcols,collapse="','"),"'"))
   }else{
     # The required columns are present - do the assessment
     
     #browser()
+    # for data having identical values in all columns except Status, 
+    # then the average status is used
+    groupcols<-names(assessmentdata)
+    groupcols<- groupcols[!groupcols=="Status"]
+    
+    assessmentdata <- assessmentdata %>%
+      mutate(id=row_number()) %>%
+      group_by(.dots=groupcols) %>%
+      summarise(Status=mean(Status,na.rm=T),n=n(),id=min(id,na.rm=T)) %>%
+      arrange(id) %>%
+      select(-id) %>%
+      ungroup()    
+    
+    
     
     # Change order of matrices factors
     mat1<-data.frame(unique(assessmentdata$Matrix))

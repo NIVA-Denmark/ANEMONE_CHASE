@@ -51,7 +51,7 @@ ui <- fluidPage(
     
     mainPanel(
       tabsetPanel(
-        tabPanel("Data", p(DT::dataTableOutput("InDatatable")), p(textOutput("warning"))),
+        tabPanel("Data", p(DT::dataTableOutput("InDatatable")), h3(textOutput("warning"))),
         tabPanel("Indicators", 
                  p(DT::dataTableOutput("IndicatorsTable"))),
         tabPanel("Results by Matrix", 
@@ -86,7 +86,7 @@ server <- function(input, output, session) {
       filedata<-read.table(infile$datapath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char="",encoding='UTF-8')
     }, warning = function(w) {
       print("warning") #warning-handler-code
-      
+      filedata<-NULL
     }, error = function(e) {
       print("error") #error-handler-code
       output$warning<-renderText("ERROR - Could not read input file")
@@ -103,26 +103,43 @@ server <- function(input, output, session) {
     df<-filedata()
     if (is.null(df)){return(NULL)} 
     out<-Assessment(df,0)     #Individual indicator results
-    return(out)
+    if(is.data.frame(out)){
+      return(out)
+    }else{
+      output$warning<-renderText(out)
+      return(data.frame())
+    }
   })
   IndicatorsData<- reactive({
     df<-filedata()
     if (is.null(df)){return(NULL)} 
     out<-Assessment(df,1)     #Individual indicator results
-    return(out)
+    if(is.data.frame(out)){
+      return(out)
+    }else{
+      return(data.frame())
+    }
   })
   
   QEdata <- reactive({
     df<-filedata()
     if (is.null(df)){return(NULL)} 
     out<-Assessment(df,3)     #Quality Element results
-    return(out)
+    if(is.data.frame(out)){
+      return(out)
+    }else{
+      return(data.frame())
+    }
   })
   QEspr <- reactive({
     df<-filedata()
     if (is.null(df)){return(NULL)} 
     out<-Assessment(df,2)     #QE Results transposed
-    return(out)
+    if(is.data.frame(out)){
+      return(out)
+    }else{
+      return(data.frame())
+    }
   })
   
   CHASEplot<- reactive({
@@ -184,13 +201,23 @@ server <- function(input, output, session) {
   #output$InDatatable <- renderTable({return(InData())})
   
   observe({
-    output$IndicatorsTable <- IndicatorTableDT(IndicatorsData(),roundlist=c("CR","ConSum"),valuecols="QEStatus",cols=c("QEStatus","ConSum"))
+    df<-IndicatorsData()
+    if(!is.null(df)){
+      if(ncol(df)>1){
+        output$IndicatorsTable <- IndicatorTableDT(df,roundlist=c("CR","ConSum"),valuecols="QEStatus",cols=c("QEStatus","ConSum"))
+      }
+    }
   })
   
   observe({
     QEnames<-QEdata()
+    df<-QEdata()
+    if(!is.null(df)){
+      if(ncol(df)>1){
+        output$QEResultsTable <- IndicatorTableDT(df,roundlist=c("ConSum"),valuecols="QEStatus",cols=c("QEStatus","ConSum"))
+        }
+      }
     
-    output$QEResultsTable <- IndicatorTableDT(QEdata(),roundlist=c("ConSum"),valuecols="QEStatus",cols=c("QEStatus","ConSum"))
   })
   
   
@@ -205,8 +232,12 @@ server <- function(input, output, session) {
     }else{
       roundcols<-c("ConSum")
     }
-    
-    output$ResultsTable <- IndicatorTableDT(QEspr(),roundlist=roundcols,valuecols="Status",cols=c("Status","ConSum"))
+    df<-QEspr()
+    if(!is.null(df)){
+      if(ncol(df)>1){
+        output$ResultsTable <- IndicatorTableDT(QEspr(),roundlist=roundcols,valuecols="Status",cols=c("Status","ConSum"))
+      }
+    }
   })
   
   
