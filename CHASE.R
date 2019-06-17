@@ -7,7 +7,10 @@ Assessment<- function(assessmentdata,summarylevel=0){
   datain<-assessmentdata
   
 
-
+  if(!length(assessmentdata)>0){
+    message("assessmentdata length = 0")
+    return(NA)
+  }else{
 
    requiredcols <- c("Matrix","Substance","Threshold","Status")
    extracols <- c("Waterbody","Response")
@@ -172,6 +175,8 @@ Assessment<- function(assessmentdata,summarylevel=0){
     }
     #
   }
+}
+
 }
 
 #===============================================================================
