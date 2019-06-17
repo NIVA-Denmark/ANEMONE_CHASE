@@ -51,7 +51,7 @@ ui <- fluidPage(
     
     mainPanel(
       tabsetPanel(
-        tabPanel("Data", p(DT::dataTableOutput("InDatatable"))),
+        tabPanel("Data", p(DT::dataTableOutput("InDatatable")), p(textOutput("warning"))),
         tabPanel("Indicators", 
                  p(DT::dataTableOutput("IndicatorsTable"))),
         tabPanel("Results by Matrix", 
@@ -80,6 +80,7 @@ server <- function(input, output, session) {
       return(NULL)
     }
     
+    output$warning<-NULL
     
     result = tryCatch({
       filedata<-read.table(infile$datapath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char="",encoding='UTF-8')
@@ -88,7 +89,8 @@ server <- function(input, output, session) {
       
     }, error = function(e) {
       print("error") #error-handler-code
-      filedata<-"error - could not read file"
+      output$warning<-renderText("ERROR - Could not read input file")
+      filedata<-NULL
     }, finally = {
       print("cleanup") #cleanup-code
       return(filedata)
