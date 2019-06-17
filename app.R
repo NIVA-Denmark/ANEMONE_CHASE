@@ -79,8 +79,22 @@ server <- function(input, output, session) {
       # User has not uploaded a file yet
       return(NULL)
     }
-    filedata<-read.table(infile$datapath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char="",encoding='UTF-8')
-    return(filedata)
+    
+    
+    result = tryCatch({
+      filedata<-read.table(infile$datapath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char="",encoding='UTF-8')
+    }, warning = function(w) {
+      print("warning") #warning-handler-code
+      
+    }, error = function(e) {
+      print("error") #error-handler-code
+      filedata<-"error - could not read file"
+    }, finally = {
+      print("cleanup") #cleanup-code
+      return(filedata)
+    })
+ 
+    
   })
   
   InData <- reactive({
