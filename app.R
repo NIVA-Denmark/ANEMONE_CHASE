@@ -89,7 +89,7 @@ server <- function(input, output, session) {
     output$warning<-NULL
     
     result = tryCatch({
-      filedata<-read.table(infile$datapath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char="",encoding='UTF-8')
+      filedata<-read.table(infile$datapath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char="")
     }, warning = function(w) {
       cat("warning read.table()\n") #warning-handler-code
       filedata<-NULL

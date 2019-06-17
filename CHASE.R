@@ -69,7 +69,7 @@ Assessment<- function(assessmentdata,summarylevel=0){
     }
     
     missingcols<-requiredcols[ok!=1]
-    return(paste0("Missing columns: '",paste(missingcols,collapse="','"),"'"))
+    return(paste0("Missing columns: ",paste(missingcols,collapse=",")))
   }else{
     # The required columns are present - do the assessment
     
