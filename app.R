@@ -101,13 +101,15 @@ server <- function(input, output, session) {
   
   InData <- reactive({
     df<-filedata()
-    if (is.null(df)){return(NULL)} 
-    out<-Assessment(df,0)     #Individual indicator results
-    if(is.data.frame(out)){
-      return(out)
-    }else{
-      output$warning<-renderText(out)
-      return(data.frame())
+    if (is.null(df)){return(NULL)
+      }else{
+      out<-Assessment(df,0)     #Individual indicator results
+      if(is.data.frame(out)){
+        return(out)
+      }else{
+        output$warning<-renderText(out)
+        return(data.frame())
+      }
     }
   })
   IndicatorsData<- reactive({
