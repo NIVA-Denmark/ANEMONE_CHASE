@@ -101,7 +101,7 @@ server <- function(input, output, session) {
       cat("cleanup  read.table()\n") #cleanup-code
       return(filedata)
     })
- 
+    
     
   })
   
@@ -109,7 +109,8 @@ server <- function(input, output, session) {
     df<-filedata()
     if (is.null(df)){
       return(NULL)
-      }else{
+    }else{
+      if(length(df)>0){
       out<-Assessment(df,0)     #Individual indicator results
       if(is.data.frame(out)){
         return(out)
@@ -117,43 +118,66 @@ server <- function(input, output, session) {
         output$warning<-renderText(out)
         return(data.frame())
       }
+      }else{
+        return(data.frame())
+        }
     }
   })
+  
   IndicatorsData<- reactive({
     df<-filedata()
-    if (is.null(df)){return(NULL)}else{
-      
-    out<-Assessment(df,1)     #Individual indicator results
-    if(is.data.frame(out)){
-      return(out)
-    }else{
-      return(data.frame())
-    }
+    if (is.null(df)){
+      return(NULL)
+      }else{
+        if(length(df)>0){  
+          out<-Assessment(df,1)     #Individual indicator results
+          if(is.data.frame(out)){
+            return(out)
+          }else{
+            return(data.frame())
+          }
+        }else{
+          return(data.frame())
+        }    
     } 
   })
   
   QEdata <- reactive({
     df<-filedata()
-    if (is.null(df)){return(NULL)}else{
-      
-    out<-Assessment(df,3)     #Quality Element results
-    if(is.data.frame(out)){
-      return(out)
+    if (is.null(df)){
+      return(NULL)
     }else{
-      return(data.frame())
-    }
+      if(length(df)>0){  
+        out<-Assessment(df,3)     #Quality Element results
+        if(is.data.frame(out)){
+          return(out)
+        }else{
+          return(data.frame())
+        }
+      }else{
+        return(data.frame())
+      } 
     }
   })
   QEspr <- reactive({
     df<-filedata()
-    if (is.null(df)){return(NULL)}else{
-    out<-Assessment(df,2)     #QE Results transposed
-    if(is.data.frame(out)){
-      return(out)
-    }else{
-      return(data.frame())
-    }
-      } 
+    if (is.null(df)){
+      return(NULL)
+      }else{
+        if(length(df)>0){
+          out<-Assessment(df,2)     #QE Results transposed
+          if(is.data.frame(out)){
+            return(out)
+          }else{
+            return(data.frame())
+          }         
+          
+          }else{
+          return(data.frame())
+        } 
+        
+ 
+    } 
   })
   
   CHASEplot<- reactive({
