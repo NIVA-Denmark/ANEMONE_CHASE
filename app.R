@@ -79,7 +79,7 @@ server <- function(input, output, session) {
       # User has not uploaded a file yet
       return(NULL)
     }
-    filedata<-read.csv(infile$datapath,  sep=";")
+    filedata<-read.table(infile$datapath,sep=";",header=T,stringsAsFactors=T)
     return(filedata)
   })
   
