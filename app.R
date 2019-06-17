@@ -79,7 +79,7 @@ server <- function(input, output, session) {
       # User has not uploaded a file yet
       return(NULL)
     }
-    filedata<-read.table(infile$datapath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char="")
+    filedata<-read.table(infile$datapath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char="",encoding='UTF-8')
     return(filedata)
   })
   
