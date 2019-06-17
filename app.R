@@ -5,7 +5,7 @@ library(DT)
 library(data.table)
 source('CHASE.R')
 source('outputtable.R')
-
+source('readinputfile.R')
 
 ui <- fluidPage(
   
@@ -88,27 +88,20 @@ server <- function(input, output, session) {
     
     output$warning<-NULL
     
-    result = tryCatch({
-      filedata<-read.table(infile$datapath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char="")
-    }, warning = function(w) {
-      cat("warning read.table()\n") #warning-handler-code
-      filedata<-NULL
-    }, error = function(e) {
-      cat("error read.table()\n") #error-handler-code
-      output$warning<-renderText("ERROR - Could not read input file")
-      filedata<-NULL
-    }, finally = {
-      cat("cleanup  read.table()\n") #cleanup-code
-      return(filedata)
-    })
-    
-    
+    result <- readinputfile(infile$datapath)
+    #browser()
+    if(is.character(result)){
+      output$warning<-renderText(result)
+      return(NULL)
+    }else{
+      return(result)
+    }
   })
   
   InData <- reactive({
     df<-filedata()
     if (is.null(df)){
-      return(NULL)
+      return(data.frame())
     }else{
       if(length(df)>0){
       out<-Assessment(df,0)     #Individual indicator results
@@ -127,7 +120,7 @@ server <- function(input, output, session) {
   IndicatorsData<- reactive({
     df<-filedata()
     if (is.null(df)){
-      return(NULL)
+      return(data.frame())
       }else{
         if(length(df)>0){  
           out<-Assessment(df,1)     #Individual indicator results
@@ -145,7 +138,7 @@ server <- function(input, output, session) {
   QEdata <- reactive({
     df<-filedata()
     if (is.null(df)){
-      return(NULL)
+      return(data.frame())
     }else{
       if(length(df)>0){  
         out<-Assessment(df,3)     #Quality Element results
@@ -162,7 +155,7 @@ server <- function(input, output, session) {
   QEspr <- reactive({
     df<-filedata()
     if (is.null(df)){
-      return(NULL)
+      return(data.frame())
       }else{
         if(length(df)>0){
           out<-Assessment(df,2)     #QE Results transposed

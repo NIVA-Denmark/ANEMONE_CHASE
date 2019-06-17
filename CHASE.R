@@ -6,12 +6,14 @@ library("tidyr")
 Assessment<- function(assessmentdata,summarylevel=0){
   datain<-assessmentdata
   
-
+ #browser()
   if(!length(assessmentdata)>0){
     message("assessmentdata length = 0")
     return(NA)
   }else{
 
+    
+    
    requiredcols <- c("Matrix","Substance","Threshold","Status")
    extracols <- c("Waterbody","Response")
    
@@ -19,6 +21,12 @@ Assessment<- function(assessmentdata,summarylevel=0){
   #Check column names in the imported data
   cnames<-names(assessmentdata)
   nimp = ncol(assessmentdata)
+  
+  if(is.null(nimp)){
+    message("assessmentdata has 0 columns")
+    return(NA)
+  }else{
+    
   nreq = length(requiredcols)
   nextra = length(extracols)
   
@@ -176,7 +184,8 @@ Assessment<- function(assessmentdata,summarylevel=0){
     #
   }
 }
-
+  }
+ 
 }
 
 #===============================================================================
