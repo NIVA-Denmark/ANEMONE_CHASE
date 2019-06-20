@@ -1,7 +1,7 @@
-readinputfile1<-function(filepath){
+readinputfile1<-function(filepath,sepchar){
   browser()
   result = tryCatch({
-    filedata<-read.table(filepath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char="")
+    filedata<-read.table(filepath,sep=sepchar,header=T,stringsAsFactors=T,quote="",comment.char="")
   }, warning = function(w) {
     cat("warning read.table()\n") #warning-handler-code
     filedata<-""
@@ -17,12 +17,12 @@ readinputfile1<-function(filepath){
 }
 
 
-readinputfile<-function(filepath){
+readinputfile<-function(filepath,sepchar){
   #browser()
-  res <- try(read.table(filepath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char=""))
+  res <- try(read.table(filepath,sep=sepchar,header=T,stringsAsFactors=T,quote="",comment.char=""))
   if(inherits(res, "try-error")){
     # error - try reading ANSI encoding
-    res <- try(read.table(filepath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char="", fileEncoding="Windows-1252"))
+    res <- try(read.table(filepath,sep=sepchar,header=T,stringsAsFactors=T,quote="",comment.char="", fileEncoding="Windows-1252"))
     if(inherits(res, "try-error")){
       res<-"Error reading file"
     }
