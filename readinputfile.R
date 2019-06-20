@@ -17,12 +17,12 @@ readinputfile1<-function(filepath,sepchar){
 }
 
 
-readinputfile<-function(filepath,sepchar){
+readinputfile<-function(filepath,sepchar,decchar){
   #browser()
-  res <- try(read.table(filepath,sep=sepchar,header=T,stringsAsFactors=T,quote="",comment.char=""))
+  res <- try(read.table(filepath,sep=sepchar,header=T,stringsAsFactors=T,quote="",comment.char="",dec=decchar))
   if(inherits(res, "try-error")){
     # error - try reading ANSI encoding
-    res <- try(read.table(filepath,sep=sepchar,header=T,stringsAsFactors=T,quote="",comment.char="", fileEncoding="Windows-1252"))
+    res <- try(read.table(filepath,sep=sepchar,header=T,stringsAsFactors=T,quote="",comment.char="", fileEncoding="Windows-1252",dec=decchar))
     if(inherits(res, "try-error")){
       res<-"Error reading file"
     }

@@ -14,7 +14,8 @@ ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
       fileInput('datafile', 'Choose input file'),
-      selectInput('sepname','Column Separator:',c("Comma","Semi-colon","Tab")),
+      selectInput('sepname','Column separator:',c("Comma","Semi-colon","Tab")),
+      selectInput('decname','Decimal character:',c("Point","Comma")),
       withTags({
         div(class="header", checked=NA,
             h4("Instructions"),
@@ -89,7 +90,7 @@ server <- function(input, output, session) {
     
     output$warning<-NULL
     
-    result <- readinputfile(infile$datapath,sepchar())
+    result <- readinputfile(infile$datapath,sepchar(),decchar())
     #browser()
     if(is.character(result)){
       output$warning<-renderText(result)
@@ -104,6 +105,11 @@ server <- function(input, output, session) {
     if(input$sepname=="Semi-colon"){sep<-";"}
     if(input$sepname=="Tab"){sep<-"\t"}
     return(sep)
+  })
+  decchar<-reactive({
+    dec<-"."
+    if(input$sepname=="Comma"){dec<-","}
+    return(dec)
   })
   
   InData <- reactive({
