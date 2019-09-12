@@ -6,7 +6,9 @@ library("tidyr")
 Assessment<- function(assessmentdata,summarylevel=0){
   datain<-assessmentdata
   
- #browser()
+  names(assessmentdata)<-gsub(" ","_",names(assessmentdata))
+ 
+  #browser()
   if(!length(assessmentdata)>0){
     message("assessmentdata length = 0")
     return(NA)
@@ -109,6 +111,13 @@ Assessment<- function(assessmentdata,summarylevel=0){
     
     assessmentdata$Matrix <- factor(assessmentdata$Matrix, levels = mat1$char)
 
+    
+    # filter data which doesn't have waterbody specified or is missing other data
+    assessmentdata <- assessmentdata %>%
+      filter(!is.na(Waterbody)) %>%
+      filter(!is.na(Matrix)) %>%
+      filter(!is.na(Status))
+    
     # All combinations of matrices and waterbodies
     # This is used to ensure that a NA is returned where the combinations are missing
     waterbodies<-unique(assessmentdata$Waterbody)

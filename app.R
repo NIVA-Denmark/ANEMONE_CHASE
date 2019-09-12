@@ -13,9 +13,6 @@ ui <- fluidPage(
   titlePanel("CHASE Tool"),
   sidebarLayout(
     sidebarPanel(
-      fileInput('datafile', 'Choose input file'),
-      selectInput('sepname','Column separator:',c("Comma","Semi-colon","Tab")),
-      selectInput('decname','Decimal character:',c("Point","Comma")),
       withTags({
         div(class="header", checked=NA,
             h4("Instructions"),
@@ -53,12 +50,18 @@ ui <- fluidPage(
     
     mainPanel(
       tabsetPanel(
-        
-        tabPanel("Data", 
-                 h3(tags$style(type='text/css', '#warning {color: red;}'), 
-                    textOutput("warning")),
-                 p(DT::dataTableOutput("InDatatable"))
+        tabPanel("Select input",
+                 fileInput('datafile', 'Choose input file', accept=NULL),
+                 #selectInput('sepname','Column separator:',c("Comma","Semi-colon","Tab")),
+                 #selectInput('decname','Decimal character:',c("Point","Comma")),
+                 uiOutput("sepSelect"),
+                 uiOutput("decSelect"),
+                 h3(tags$style(type='text/css', '#warning {color: red;}'),
+                    textOutput("warning"))
                  
+        ),
+        tabPanel("Data", h3(""),
+                 p(DT::dataTableOutput("InDatatable"))
                  ),
         tabPanel("Indicators", h3(""),
                  p(DT::dataTableOutput("IndicatorsTable"))),
@@ -67,7 +70,10 @@ ui <- fluidPage(
         tabPanel("Overall Results", h3(""),
                  p(DT::dataTableOutput("ResultsTable"))),   
         tabPanel("Plot", h3(""),
-                 p(plotOutput("plot",inline=TRUE)) )  
+                 p(plotOutput("plot",inline=TRUE)) ),
+        tabPanel("Download", h3(""),
+                 p("...under development") )  
+        
       ) # tabset panel
     )
   )  
@@ -87,10 +93,18 @@ server <- function(input, output, session) {
       # User has not uploaded a file yet
       return(NULL)
     }
-    
+    if(tolower(substr(infile,1+regexpr("\\.",infile)[1],nchar(infile))) %in% c("xls","xlsx")){
+      bExcel<-TRUE
+      result <- readinputfilexl(infile$datapath,sepchar(),decchar())
+    }else{
+      bExcel<-FALSE
+      result <- readinputfile(infile$datapath,sepchar(),decchar())
+    }
+    cat(paste0("Excel==",bExcel,"\n"))
+
     output$warning<-NULL
     
-    result <- readinputfile(infile$datapath,sepchar(),decchar())
+    
     #browser()
     if(is.character(result)){
       output$warning<-renderText(result)
@@ -108,9 +122,52 @@ server <- function(input, output, session) {
   })
   decchar<-reactive({
     dec<-"."
-    if(input$sepname=="Comma"){dec<-","}
+    if(input$decname=="Comma"){dec<-","}
     return(dec)
   })
+  
+  # 'Column separator:',c("Comma","Semi-colon","Tab"
+  output$sepSelect <- renderUI({
+    bShow<-F
+    infile <- input$datafile
+    if(!is.null(infile)){
+      if(!tolower(substr(infile,1+regexpr("\\.",infile)[1],nchar(infile))) %in% c("xls","xlsx")){
+        bShow<-T
+      }
+    }
+    if(bShow){
+      tagList(selectInput(
+        "sepname",
+        "Column separator:",
+        choices = c("Comma","Semi-colon","Tab"),
+        multiple = FALSE
+      ))
+    }else{
+      ""
+    }
+  })
+
+  output$decSelect <- renderUI({
+    bShow<-F
+    infile <- input$datafile
+    if(!is.null(infile)){
+      if(!tolower(substr(infile,1+regexpr("\\.",infile)[1],nchar(infile))) %in% c("xls","xlsx")){
+        bShow<-T
+      }
+    }
+    if(bShow){
+      tagList(selectInput(
+        "decname",
+        "Decimal character:",
+        choices = c("Point","Comma"),
+        multiple = FALSE
+      ))
+    }else{
+      ""
+    }
+  })
+  
+    
   
   InData <- reactive({
     df<-filedata()
@@ -189,7 +246,7 @@ server <- function(input, output, session) {
   
   CHASEplot<- reactive({
     QE<-QEdata()
-    
+    #browser()
     ymax=max(QE$ConSum,na.rm=TRUE)
     ymax=ceiling(ymax)
     if(ymax>5 & ymax<10){ymax=10}
@@ -207,7 +264,9 @@ server <- function(input, output, session) {
     
     levels2<-levels
     levels$x<-0.5
-    levels2$x<-0.5+max(as.numeric(QE$Waterbody))
+    #maxWB<-max(as.numeric(QE$Waterbody))
+    maxWB<-nrow(distinct(QE,Waterbody))
+    levels2$x<-0.5+maxWB
     
     levels<-rbind(levels, levels2)
     
@@ -217,19 +276,21 @@ server <- function(input, output, session) {
     Palette1=c("#007eff","#00d600","#ffff00","#ff8c2b","#ff0000")
     
     shapelist<-c(0,1,2,4)
-    #browser()
+    
     df<-QE 
+    df$Waterbody<-factor(df$Waterbody)
     df$Waterbody<-factor(df$Waterbody,levels=rev(levels(df$Waterbody)))
 
     p<-ggplot(data=df,x=Waterbody,y=ConSum) + theme_bw(base_size=14) +
-      theme(legend.position="top",legend.box="horizontal") +
+      theme(legend.position="top",legend.box="vertical") +
       geom_point(size=5,data=df, aes(x=factor(Waterbody), y=ConSum,shape=Matrix)) +
       geom_ribbon(data=levels,aes(x=x,ymin=ymin,ymax=ymax,fill=Status),alpha=1) +
       geom_point(size=5,data=df, aes(x=factor(Waterbody), y=ConSum,shape=Matrix)) +
       scale_fill_manual(name="Status", values=Palette1)+
       scale_shape_manual(values=shapelist) +
       ylab('Contamination Sum') + xlab('Waterbody') +
-      coord_flip()
+      coord_flip() +
+      guides(fill=guide_legend(direction="horizontal"), shape=guide_legend(direction="horizontal")) #
       return(p)
   })
   
