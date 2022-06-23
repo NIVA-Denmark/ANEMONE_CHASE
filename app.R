@@ -83,7 +83,7 @@ ui <- fluidPage(
 server <- function(input, output, session) {
 
   output$caption <- renderText(input$num)
-  
+  cat(paste0("Charset: ",localeToCharset(),"\n"))
   addResourcePath("data","./data/")
  
   #This function is repsonsible for loading in the selected file
@@ -93,7 +93,7 @@ server <- function(input, output, session) {
       # User has not uploaded a file yet
       return(NULL)
     }
-    if(tolower(substr(infile,1+regexpr("\\.",infile)[1],nchar(infile))) %in% c("xls","xlsx")){
+    if(file_ext(infile) %in% c("xls","xlsx")){
       bExcel<-TRUE
       result <- readinputfilexl(infile$datapath,sepchar(),decchar())
     }else{
@@ -131,7 +131,7 @@ server <- function(input, output, session) {
     bShow<-F
     infile <- input$datafile
     if(!is.null(infile)){
-      if(!tolower(substr(infile,1+regexpr("\\.",infile)[1],nchar(infile))) %in% c("xls","xlsx")){
+      if(!file_ext(infile) %in% c("xls","xlsx")){
         bShow<-T
       }
     }
@@ -151,7 +151,7 @@ server <- function(input, output, session) {
     bShow<-F
     infile <- input$datafile
     if(!is.null(infile)){
-      if(!tolower(substr(infile,1+regexpr("\\.",infile)[1],nchar(infile))) %in% c("xls","xlsx")){
+      if(!file_ext(infile) %in% c("xls","xlsx")){
         bShow<-T
       }
     }

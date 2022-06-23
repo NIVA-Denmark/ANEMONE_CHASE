@@ -26,3 +26,9 @@ readinputfilexl<-function(filepath,sepchar,decchar){
 }
 
 
+
+file_ext <- function(f_name) {
+  n<-gregexpr("\\.",f_name)[[1]]
+  pos<-n[length(n)]
+  tolower(substr(f_name,1+pos,nchar(f_name)))
+  }
