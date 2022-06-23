@@ -1,31 +1,34 @@
-readinputfile1<-function(filepath){
-  browser()
-  result = tryCatch({
-    filedata<-read.table(filepath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char="")
-  }, warning = function(w) {
-    cat("warning read.table()\n") #warning-handler-code
-    filedata<-""
-  }, error = function(e) {
-    cat("error read.table()\n") #error-handler-code
-    output$warning<-renderText("ERROR - Could not read input file")
-    filedata<-""
-  }, finally = {
-    cat("cleanup  read.table()\n") #cleanup-code
-    return(filedata)
-  })
-  
-}
 
 
-readinputfile<-function(filepath){
+readinputfile<-function(filepath,sepchar,decchar){
   #browser()
-  res <- try(read.table(filepath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char=""))
+  res <- try(read.table(filepath,sep=sepchar,header=T,stringsAsFactors=T,quote="",comment.char="",dec=decchar))
   if(inherits(res, "try-error")){
     # error - try reading ANSI encoding
-    res <- try(read.table(filepath,sep=";",header=T,stringsAsFactors=T,quote="",comment.char="", fileEncoding="Windows-1252"))
+    res <- try(read.table(filepath,sep=sepchar,header=T,stringsAsFactors=T,quote="",comment.char="", fileEncoding="Windows-1252",dec=decchar))
     if(inherits(res, "try-error")){
       res<-"Error reading file"
     }
   } 
     return(res)
+}
+
+readinputfilexl<-function(filepath,sepchar,decchar){
+  require(readxl)
+  
+  
+  res <- try(read_excel(filepath, 1))
+  if(inherits(res, "try-error")){
+    # error - try reading ANSI encoding
+      res<-"Error reading Excel file"
+    }
+  return(res)
+}
+
+
+
+file_ext <- function(f_name) {
+  n<-gregexpr("\\.",f_name)[[1]]
+  pos<-n[length(n)]
+  tolower(substr(f_name,1+pos,nchar(f_name)))
   }

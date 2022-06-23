@@ -4,6 +4,7 @@ IndicatorTableDT<-function(df,roundlist=NULL,valuecols="",cols=""){
   
 
   if(is.data.frame(df)){
+    
     dt<-datatable(df)
     if(!is.null(roundlist)){
       dt<-dt %>% formatRound(columns=roundlist, digits=3)
