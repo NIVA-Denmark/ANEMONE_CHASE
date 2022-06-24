@@ -338,17 +338,17 @@ server <- function(input, output, session) {
     
   })
   
-  
+
   
   observe({
     QEnames<-QEdata()
+    roundcols<-c("ConSum")
     if(!is.null(QEnames)){
-
-      QEnames<-distinct(QEnames,Matrix)
-      QEnames<-as.character(QEnames$Matrix)
-      roundcols<-c("ConSum",QEnames)
-    }else{
-      roundcols<-c("ConSum")
+      if("Matrix" %in% names(QEnames)){
+        QEnames<-distinct(QEnames,Matrix)
+        QEnames<-as.character(QEnames$Matrix)
+        roundcols<-c("ConSum",QEnames)
+      }
     }
     df<-QEspr()
     if(!is.null(df)){
@@ -360,8 +360,7 @@ server <- function(input, output, session) {
     }
   })
   
-  
-  
+
   
   output$QEtable <- renderTable({return(QEspr())})
 
