@@ -11,8 +11,10 @@ IndicatorTableDT<-function(df,roundlist=NULL,valuecols="",cols=""){
     }
     
     if(valuecols!=""){
-      if(cols==""){
-        cols<-valuecols
+      if(length(cols)==1){
+        if(cols==""){
+          cols<-valuecols
+        }
       }
     dt<-dt %>% # Style cells status
       formatStyle(

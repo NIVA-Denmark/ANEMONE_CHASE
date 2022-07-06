@@ -3,6 +3,8 @@ library(shiny)
 library(ggplot2)
 library(DT)
 library(data.table)
+library(openxlsx)
+
 source('CHASE.R')
 source('outputtable.R')
 source('readinputfile.R')
@@ -72,7 +74,7 @@ ui <- fluidPage(
         tabPanel("Plot", h3(""),
                  p(plotOutput("plot",inline=TRUE)) ),
         tabPanel("Download", h3(""),
-                 p("...under development") )  
+                 p(uiOutput("download")) )  
         
       ) # tabset panel
     )
@@ -239,14 +241,14 @@ server <- function(input, output, session) {
           }else{
           return(data.frame())
         } 
-        
- 
     } 
   })
   
   CHASEplot<- reactive({
     QE<-QEdata()
     #browser()
+    if(nrow(QE)>0){
+      
     ymax=max(QE$ConSum,na.rm=TRUE)
     ymax=ceiling(ymax)
     if(ymax>5 & ymax<10){ymax=10}
@@ -292,6 +294,10 @@ server <- function(input, output, session) {
       coord_flip() +
       guides(fill=guide_legend(direction="horizontal"), shape=guide_legend(direction="horizontal")) #
       return(p)
+    }else{
+      return("")
+    }
+    
   })
   
   figh<-reactive({
@@ -373,6 +379,88 @@ server <- function(input, output, session) {
     }
   })
 
+  output$download <- renderUI({
+    QE<-QEdata()
+    if(nrow(QE)>0){
+       tagList(downloadButton("downloadButton", "Download Results"))
+    }else{
+      tagList(downloadButton("downloadButton", "Download Results",disabled=T))
+    }
+  })
+  
+  # Downloadable csv of selected dataset ----
+  output$downloadButtonX <- downloadHandler(
+    
+    filename = function() {
+      paste(values$wbselected, ".csv", sep = "")
+    },
+    content = function(file) {
+      write.table(downloadResults(),file,row.names=F,sep=";", na="")
+    }
+  )
+  
+
+  output$downloadButton <- downloadHandler(
+    filename = function() {
+      paste0("CHASE_",format(Sys.time(),"%Y%m%d_%H%M"),".xlsx")
+    },
+    content = function(file) {
+      my_workbook <- createWorkbook()
+      
+      addWorksheet(
+        wb = my_workbook,
+        sheetName = "Indicators"
+      )
+      addWorksheet(
+        wb = my_workbook,
+        sheetName = "By Matrix"
+      )
+      addWorksheet(
+        wb = my_workbook,
+        sheetName = "Overall"
+      )
+
+      writeData(
+        my_workbook,
+        sheet = 1,
+        IndicatorsData(),
+        startRow = 1,
+        startCol = 1
+      )
+      
+      writeData(
+        my_workbook,
+        sheet = 2,
+        QEdata(),
+        startRow = 1,
+        startCol = 1
+      )
+      
+      writeData(
+        my_workbook,
+        sheet = 3,
+        QEspr(),
+        startRow = 1,
+        startCol = 1
+      )
+     
+      for(isheet in 1:3){
+        addStyle(
+          my_workbook,
+          sheet = isheet,
+          style = createStyle(
+            textDecoration = "bold"
+          ),
+          rows = 1,
+          cols = 1:20
+        )
+      }
+      
+      saveWorkbook(my_workbook, file, overwrite=T)
+    }
+  )
+  
+  
   
 }
 
